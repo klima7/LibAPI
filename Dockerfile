@@ -14,7 +14,6 @@ COPY pyproject.toml uv.lock ./
 
 # Install dependencies with uv
 RUN uv pip install --no-cache -r pyproject.toml
-RUN uv pip install --no-cache gunicorn
 
 COPY . .
 
