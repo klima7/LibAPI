@@ -139,7 +139,7 @@ class CheckoutViewSet(viewsets.ReadOnlyModelViewSet):
         responses={
             201: CheckoutSerializer,
             400: 'Bad Request - Book already checked out or invalid data',
-            404: 'Book not found'
+            404: 'Book or Reader not found'
         }
     )
     @action(detail=False, methods=['post'])
@@ -155,6 +155,14 @@ class CheckoutViewSet(viewsets.ReadOnlyModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
         
+        try:
+            reader = Reader.objects.get(card_number=serializer.validated_data['card_number'])
+        except Reader.DoesNotExist:
+            return Response(
+                {'error': 'Reader not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
         if book.active_checkout:
             return Response(
                 {'error': 'Book is already checked out'},
@@ -162,11 +170,6 @@ class CheckoutViewSet(viewsets.ReadOnlyModelViewSet):
             )
         
         with transaction.atomic():
-            # Get or create reader
-            reader, created = Reader.objects.get_or_create(
-                card_number=serializer.validated_data['card_number']
-            )
-            
             # Create checkout
             checkout = Checkout.objects.create(
                 book=book,
