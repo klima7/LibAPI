@@ -12,7 +12,7 @@ from .serializers import (
     BookSerializer, ReaderSerializer, CheckoutSerializer,
     CreateCheckoutSerializer
 )
-from .filters import CheckoutFilter
+from .filters import BookFilter, ReaderFilter, CheckoutFilter
 
 
 class BookViewSet(mixins.CreateModelMixin,
@@ -23,6 +23,39 @@ class BookViewSet(mixins.CreateModelMixin,
     queryset = Book.objects.select_related('active_checkout__reader').all()
     serializer_class = BookSerializer
     lookup_field = 'serial_number'
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = BookFilter
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'title',
+                openapi.IN_QUERY,
+                description='Filter by title (partial match, case-insensitive)',
+                type=openapi.TYPE_STRING
+            ),
+            openapi.Parameter(
+                'author',
+                openapi.IN_QUERY,
+                description='Filter by author (partial match, case-insensitive)',
+                type=openapi.TYPE_STRING
+            ),
+            openapi.Parameter(
+                'is_available',
+                openapi.IN_QUERY,
+                description='Filter by availability status (true/false)',
+                type=openapi.TYPE_BOOLEAN
+            ),
+            openapi.Parameter(
+                'current_reader',
+                openapi.IN_QUERY,
+                description='Filter by current reader ID',
+                type=openapi.TYPE_INTEGER
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class ReaderViewSet(mixins.CreateModelMixin,
@@ -33,6 +66,21 @@ class ReaderViewSet(mixins.CreateModelMixin,
     queryset = Reader.objects.all()
     serializer_class = ReaderSerializer
     lookup_field = 'card_number'
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ReaderFilter
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'name',
+                openapi.IN_QUERY,
+                description='Filter by name (partial match, case-insensitive)',
+                type=openapi.TYPE_STRING
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class CheckoutViewSet(viewsets.ReadOnlyModelViewSet):
