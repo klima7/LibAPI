@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - /app/__pycache__
+      - /app/.venv
+      - /app/.uv
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      - PYTHONUNBUFFERED=1
+      - DJANGO_DEVELOPMENT=1
+      - UV_SYSTEM_PYTHON=1
+    restart: unless-stopped
