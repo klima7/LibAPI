@@ -29,6 +29,12 @@ class BookViewSet(mixins.CreateModelMixin,
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter(
+                'page',
+                openapi.IN_QUERY,
+                description='Page number',
+                type=openapi.TYPE_INTEGER
+            ),
+            openapi.Parameter(
                 'title',
                 openapi.IN_QUERY,
                 description='Filter by title (partial match, case-insensitive)',
@@ -72,6 +78,12 @@ class ReaderViewSet(mixins.CreateModelMixin,
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter(
+                'page',
+                openapi.IN_QUERY,
+                description='Page number',
+                type=openapi.TYPE_INTEGER
+            ),
+            openapi.Parameter(
                 'name',
                 openapi.IN_QUERY,
                 description='Filter by name (partial match, case-insensitive)',
@@ -92,6 +104,12 @@ class CheckoutViewSet(viewsets.ReadOnlyModelViewSet):
 
     @swagger_auto_schema(
         manual_parameters=[
+            openapi.Parameter(
+                'page',
+                openapi.IN_QUERY,
+                description='Page number',
+                type=openapi.TYPE_INTEGER
+            ),
             openapi.Parameter(
                 'book',
                 openapi.IN_QUERY,
