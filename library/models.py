@@ -20,6 +20,7 @@ class Reader(models.Model):
     card_number = models.CharField(max_length=6, unique=True)
     name = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Checkout(models.Model):
