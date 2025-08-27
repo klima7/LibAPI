@@ -15,7 +15,7 @@ services:
 
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    command: /app/entrypoint-dev.sh
     volumes:
       - .:/app
       - /app/__pycache__

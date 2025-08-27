@@ -17,6 +17,9 @@ RUN uv pip install --no-cache -r pyproject.toml
 
 COPY . .
 
+# Copy entrypoint scripts and make them executable
+RUN chmod +x /app/entrypoint-dev.sh /app/entrypoint-prod.sh
+
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "libAPI.wsgi:application"]
+CMD ["/app/entrypoint-prod.sh"]

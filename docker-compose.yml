@@ -13,7 +13,7 @@ services:
 
   web:
     build: .
-    command: gunicorn --bind 0.0.0.0:8000 --workers 4 libapi.wsgi:application
+    command: /app/entrypoint-prod.sh
     ports:
       - "8000:8000"
     environment:
