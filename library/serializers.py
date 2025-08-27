@@ -63,9 +63,14 @@ class BookSerializer(serializers.ModelSerializer):
         return None
 
 
-class CheckoutActionSerializer(serializers.Serializer):
+class CreateCheckoutSerializer(serializers.Serializer):
+    book_serial = serializers.CharField(max_length=6)
     card_number = serializers.CharField(max_length=6)
-    reader_name = serializers.CharField(max_length=255, required=False, allow_blank=True)
+
+    def validate_book_serial(self, value):
+        if not value.isdigit() or len(value) != 6:
+            raise serializers.ValidationError("Book serial number must be exactly 6 digits")
+        return value
 
     def validate_card_number(self, value):
         if not value.isdigit() or len(value) != 6:
