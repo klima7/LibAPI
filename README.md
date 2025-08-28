@@ -25,6 +25,24 @@ To run unit tests, execute:
 docker compose exec -it web python manage.py test
 ```
 
+### Generating fake data
+The application provides Django management commands for generating fake data to play with API:
+
+#### Generate fake data
+```bash
+docker compose exec -it web python manage.py add_fake_data
+```
+This command generates sample data with default values (10 readers, 20 books, 15 checkouts). You can customize the amounts:
+```bash
+docker compose exec -it web python manage.py add_fake_data --readers 5 --books 10 --checkouts 8
+```
+
+#### Clear all data
+```bash
+docker compose exec -it web python manage.py clear_data
+```
+This command removes all data from the database (books, readers, and checkouts).
+
 ## Available URLs
 
 Once the application is running, the following addresses will be available:

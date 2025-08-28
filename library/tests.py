@@ -1,6 +1,9 @@
+from io import StringIO
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
+from django.core.management import call_command
+from django.test import TestCase
 from .models import Book, Reader, Checkout
 
 
@@ -273,3 +276,64 @@ class CheckoutAPITest(APITestCase):
         # Filter by reader
         response = self.client.get(url, {'reader': '111111'})
         self.assertEqual(len(response.data['results']), 2)
+
+
+class ManagementCommandsTest(TestCase):
+    def test_add_fake_data_command_with_defaults(self):
+        """Test add_fake_data command with default parameters"""
+        out = StringIO()
+        call_command('add_fake_data', stdout=out)
+        
+        self.assertEqual(Reader.objects.count(), 10)
+        self.assertEqual(Book.objects.count(), 20)
+        self.assertEqual(Checkout.objects.count(), 15)
+        
+        active_checkouts = Checkout.objects.filter(returned_at__isnull=True).count()
+        self.assertGreater(active_checkouts, 0)
+        self.assertLessEqual(active_checkouts, 10)
+    
+    def test_add_fake_data_command_with_custom_params(self):
+        """Test add_fake_data command with custom parameters"""
+        out = StringIO()
+        call_command('add_fake_data', readers=5, books=10, checkouts=8, stdout=out)
+        
+        self.assertEqual(Reader.objects.count(), 5)
+        self.assertEqual(Book.objects.count(), 10)
+        self.assertEqual(Checkout.objects.count(), 8)
+    
+    def test_clear_data_command(self):
+        """Test clear_data command removes all data"""
+        Book.objects.create(
+            serial_number='123456',
+            title='Test Book',
+            author='Test Author'
+        )
+        Reader.objects.create(
+            card_number='111111',
+            name='Test Reader'
+        )
+        
+        self.assertEqual(Book.objects.count(), 1)
+        self.assertEqual(Reader.objects.count(), 1)
+        
+        out = StringIO()
+        call_command('clear_data', stdout=out)
+        
+        self.assertEqual(Book.objects.count(), 0)
+        self.assertEqual(Reader.objects.count(), 0)
+        self.assertEqual(Checkout.objects.count(), 0)
+    
+    def test_commands_integration(self):
+        """Test that commands work together correctly"""
+        out = StringIO()
+        call_command('add_fake_data', readers=3, books=6, checkouts=4, stdout=out)
+        self.assertEqual(Book.objects.count(), 6)
+        self.assertEqual(Reader.objects.count(), 3)
+        
+        call_command('clear_data', stdout=out)
+        self.assertEqual(Book.objects.count(), 0)
+        self.assertEqual(Reader.objects.count(), 0)
+        
+        call_command('add_fake_data', readers=2, books=4, checkouts=2, stdout=out)
+        self.assertEqual(Book.objects.count(), 4)
+        self.assertEqual(Reader.objects.count(), 2)
