@@ -1,6 +1,6 @@
 # Library Management API
 
-Library management system based on Django REST Framework, providing comprehensive API for managing books, readers, and checkouts.
+Library management system based on Django REST Framework, providing comprehensive API for managing books, readers, and checkouts. The API supports filtering by various parameters and pagination for handling large datasets. Includes comprehensive unit tests.
 
 ## Running the Project
 
