@@ -20,7 +20,7 @@ class BookViewSet(mixins.CreateModelMixin,
                   mixins.DestroyModelMixin,
                   mixins.ListModelMixin,
                   viewsets.GenericViewSet):
-    queryset = Book.objects.select_related('active_checkout__reader').all()
+    queryset = Book.objects.select_related('active_checkout__reader').order_by('-created_at')
     serializer_class = BookSerializer
     lookup_field = 'serial_number'
     filter_backends = [DjangoFilterBackend]
@@ -69,7 +69,7 @@ class ReaderViewSet(mixins.CreateModelMixin,
                     mixins.DestroyModelMixin,
                     mixins.ListModelMixin,
                     viewsets.GenericViewSet):
-    queryset = Reader.objects.all()
+    queryset = Reader.objects.order_by('-created_at')
     serializer_class = ReaderSerializer
     lookup_field = 'card_number'
     filter_backends = [DjangoFilterBackend]
@@ -96,11 +96,10 @@ class ReaderViewSet(mixins.CreateModelMixin,
 
 
 class CheckoutViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Checkout.objects.select_related('book', 'reader').all()
+    queryset = Checkout.objects.select_related('book', 'reader').order_by('-checked_out_at')
     serializer_class = CheckoutSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = CheckoutFilter
-    ordering = ['-checked_out_at']
 
     @swagger_auto_schema(
         manual_parameters=[
